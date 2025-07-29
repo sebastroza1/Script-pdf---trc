@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload PDFs{% endblock %}
+
+{% block content %}
+  <h1>Upload PDF files</h1>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="files" multiple required>
+    <button type="submit">Procesar</button>
+  </form>
+{% endblock %}
