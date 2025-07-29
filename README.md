@@ -1,6 +1,6 @@
 # Gestor de PDFs
 
-Esta aplicación Flask permite subir múltiples archivos PDF y procesarlos para extraer información relevante. Utiliza un diseño moderno con Bootstrap 5 y ofrece carga de archivos mediante arrastrar y soltar.
+Esta aplicación Flask permite subir múltiples archivos PDF y procesarlos para extraer información relevante. Utiliza un diseño moderno con Bootstrap 5 y ofrece carga de archivos mediante arrastrar y soltar. Ahora los documentos se procesan de forma concurrente para reducir el tiempo de espera.
 
 ## Instalación
 
@@ -44,4 +44,5 @@ Si el volumen de PDFs es grande, se recomienda integrar Celery y Redis para mane
 
 1. Abre la página principal y arrastra varios PDFs al área azul.
 2. Verás una lista previa de los archivos antes de enviarlos.
-3. Al terminar el procesamiento se mostrará un enlace para descargar el Excel.
+3. El sistema procesa los PDFs en paralelo para agilizar la generación del Excel.
+4. Al terminar el procesamiento se mostrará un enlace para descargar el Excel.

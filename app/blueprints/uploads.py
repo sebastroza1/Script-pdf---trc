@@ -2,6 +2,7 @@
 import os
 import tempfile
 from flask import Blueprint, render_template, request, current_app, send_file, flash, redirect, url_for, jsonify
+from concurrent.futures import ThreadPoolExecutor
 
 from ..services.extractor import extract_fields_from_pdf
 from ..services.excel import generate_excel
@@ -21,19 +22,20 @@ def upload_files():
             flash('No files selected')
             return redirect(request.url)
 
-        results = []
+        valid_paths = []
         for file in files:
             if not validate_file(file):
                 flash(f'Invalid file: {file.filename}')
                 continue
-
             info = save_upload(file)
-            data = extract_fields_from_pdf(info["path"])
-            results.append(data)
+            valid_paths.append(info["path"])
 
-        if not results:
+        if not valid_paths:
             flash('No valid PDFs processed')
             return redirect(request.url)
+
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(extract_fields_from_pdf, valid_paths))
 
         with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
             excel_path = generate_excel(results, tmp.name)
