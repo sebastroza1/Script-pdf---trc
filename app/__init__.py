@@ -6,7 +6,8 @@ from .utils.logger import configure_logging
 
 def create_app():
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    # Serve static files from the top-level ``static`` directory
+    app = Flask(__name__, static_folder="../static", static_url_path="/static")
     app.config.from_object(Config)
 
     configure_logging(app)

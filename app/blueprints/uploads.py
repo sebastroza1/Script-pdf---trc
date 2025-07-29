@@ -1,11 +1,11 @@
 """Blueprint handling file uploads and extraction."""
 import os
 import tempfile
-from flask import Blueprint, render_template, request, current_app, send_file, flash, redirect, url_for
-from werkzeug.utils import secure_filename
+from flask import Blueprint, render_template, request, current_app, send_file, flash, redirect, url_for, jsonify
 
 from ..services.extractor import extract_fields_from_pdf
 from ..services.excel import generate_excel
+from ..services.storage import save_upload, list_uploaded_files
 from ..utils.validators import validate_file
 
 # Explicitly tell Flask where to find the templates for this blueprint.
@@ -27,13 +27,8 @@ def upload_files():
                 flash(f'Invalid file: {file.filename}')
                 continue
 
-            filename = secure_filename(file.filename)
-            upload_dir = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_dir, exist_ok=True)
-            temp_path = os.path.join(upload_dir, filename)
-            file.save(temp_path)
-
-            data = extract_fields_from_pdf(temp_path)
+            info = save_upload(file)
+            data = extract_fields_from_pdf(info["path"])
             results.append(data)
 
         if not results:
@@ -45,7 +40,8 @@ def upload_files():
 
         return render_template('result.html', excel_file=os.path.basename(excel_path))
 
-    return render_template('upload.html')
+    files = list_uploaded_files()
+    return render_template('upload.html', files=files)
 
 
 @bp.route('/download/<filename>')
@@ -55,3 +51,13 @@ def download_file(filename):
         return send_file(file_path, as_attachment=True)
     flash('File not found')
     return redirect(url_for('uploads.upload_files'))
+
+
+@bp.route('/files')
+def files_list():
+    """Return list of uploaded PDF files."""
+    files = [
+        {"name": f["name"], "date": f["date"].isoformat()}
+        for f in list_uploaded_files()
+    ]
+    return jsonify(files)
