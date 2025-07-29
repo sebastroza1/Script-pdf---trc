@@ -2,6 +2,7 @@
 import re
 from typing import Dict
 import pdfplumber
+from pdfplumber.utils.exceptions import PdfminerException, MalformedPDFException
 
 
 DATE_PATTERN = re.compile(r"\b(\d{2}[/-]\d{2}[/-]\d{4})\b")
@@ -11,11 +12,17 @@ COMPANY_PATTERN = re.compile(r"Empresa[:\s]+([A-Za-zÁÉÍÓÚÑñ ]+)")
 
 
 def extract_fields_from_pdf(path: str) -> Dict[str, str]:
-    """Extract date, name, title and company from a PDF file."""
+    """Extract date, name, title and company from a PDF file.
+
+    Raises ``ValueError`` if the file is not a valid PDF that can be parsed.
+    """
     data = {"Fecha": "", "Nombre": "", "Cargo": "", "Empresa": ""}
 
-    with pdfplumber.open(path) as pdf:
-        text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+    try:
+        with pdfplumber.open(path) as pdf:
+            text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+    except (PdfminerException, MalformedPDFException, Exception) as e:
+        raise ValueError(f"Invalid PDF file {path}: {e}") from e
 
     if match := DATE_PATTERN.search(text):
         data["Fecha"] = match.group(1)

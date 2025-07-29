@@ -31,7 +31,12 @@ def upload_files():
                 invalid_count += 1
                 return None
             info = save_upload(file, upload_dir=upload_dir)
-            return extract_fields_from_pdf(info["path"])
+            try:
+                return extract_fields_from_pdf(info["path"])
+            except ValueError as e:
+                current_app.logger.warning("Skipped invalid PDF %s: %s", file.filename, e)
+                invalid_count += 1
+                return None
 
         with ThreadPoolExecutor() as executor:
             results = [r for r in executor.map(_process, files) if r]
