@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
 
-{% block title %}Upload PDFs{% endblock %}
+{% block title %}Gestionar PDFs{% endblock %}
 
 {% block content %}
-  <h1>Upload PDF files</h1>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="files" multiple required>
-    <button type="submit">Procesar</button>
-  </form>
+<h1 class="my-4">Subir documentos</h1>
+<div id="drop-area" class="mb-3">
+  Arrastra y suelta los archivos o haz clic para seleccionarlos
+</div>
+<form id="upload-form" method="post" enctype="multipart/form-data">
+  <input id="file-input" type="file" name="files" multiple hidden required>
+  <ul id="file-list" class="file-preview list-unstyled"></ul>
+  <button type="submit" class="btn btn-primary mt-3">Procesar</button>
+</form>
+
+<h2 class="mt-5">Documentos (<span id="docs-count">{{ files|length }}</span>)</h2>
+<ul id="docs-container" class="list-unstyled">
+  {% for f in files %}
+  <li>{{ f.name }} - {{ f.date.strftime('%Y-%m-%d %H:%M') }}</li>
+  {% endfor %}
+</ul>
 {% endblock %}

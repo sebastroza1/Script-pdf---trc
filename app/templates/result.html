@@ -3,6 +3,9 @@
 {% block title %}Resultado{% endblock %}
 
 {% block content %}
-  <h1>Resultado</h1>
-  <p>Descargar Excel generado: <a href="{{ url_for('uploads.download_file', filename=excel_file) }}">{{ excel_file }}</a></p>
+  <h1 class="my-4">Resultado</h1>
+  <p>
+    Descargar Excel generado:
+    <a class="btn btn-primary" href="{{ url_for('uploads.download_file', filename=excel_file) }}">{{ excel_file }}</a>
+  </p>
 {% endblock %}
