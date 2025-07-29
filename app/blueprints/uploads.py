@@ -22,15 +22,22 @@ def upload_files():
             flash('No files selected')
             return redirect(request.url)
 
+        upload_dir = current_app.config["UPLOAD_FOLDER"]
+        invalid_count = 0
+
         def _process(file):
+            nonlocal invalid_count
             if not validate_file(file):
-                flash(f'Invalid file: {file.filename}')
+                invalid_count += 1
                 return None
-            info = save_upload(file)
+            info = save_upload(file, upload_dir=upload_dir)
             return extract_fields_from_pdf(info["path"])
 
         with ThreadPoolExecutor() as executor:
             results = [r for r in executor.map(_process, files) if r]
+
+        if invalid_count:
+            flash(f'{invalid_count} invalid file(s) skipped')
 
         if not results:
             flash('No valid PDFs processed')

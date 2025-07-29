@@ -5,9 +5,13 @@ from flask import current_app
 from werkzeug.utils import secure_filename
 
 
-def save_upload(file_storage):
-    """Save uploaded file to the configured UPLOAD_FOLDER and return metadata."""
-    upload_dir = current_app.config["UPLOAD_FOLDER"]
+def save_upload(file_storage, upload_dir=None):
+    """Save uploaded file to the configured ``UPLOAD_FOLDER`` and return metadata.
+
+    When called outside an application context, ``upload_dir`` must be provided.
+    """
+    if upload_dir is None:
+        upload_dir = current_app.config["UPLOAD_FOLDER"]
     os.makedirs(upload_dir, exist_ok=True)
     filename = secure_filename(file_storage.filename)
     path = os.path.join(upload_dir, filename)
