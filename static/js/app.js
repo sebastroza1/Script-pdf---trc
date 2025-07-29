@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadForm = document.getElementById('upload-form');
   const docsContainer = document.getElementById('docs-container');
 
+  // Keep track of files selected across multiple interactions
+  const selectedFiles = new DataTransfer();
+
   function fetchFiles() {
     fetch('/files')
       .then(r => r.json())
@@ -38,16 +41,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dropArea.addEventListener('drop', e => {
       const files = e.dataTransfer.files;
-      fileInput.files = files;
-      showSelectedFiles();
+      addFiles(files);
     });
 
     dropArea.addEventListener('click', () => fileInput.click());
   }
 
+  function addFiles(files) {
+    Array.from(files).forEach(f => selectedFiles.items.add(f));
+    fileInput.files = selectedFiles.files;
+    showSelectedFiles();
+  }
+
   function showSelectedFiles() {
     fileList.innerHTML = '';
-    Array.from(fileInput.files).forEach(f => {
+    Array.from(selectedFiles.files).forEach(f => {
       const li = document.createElement('li');
       li.textContent = f.name;
       fileList.appendChild(li);
@@ -55,7 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (fileInput) {
-    fileInput.addEventListener('change', showSelectedFiles);
+    fileInput.addEventListener('change', e => {
+      addFiles(e.target.files);
+      // reset input so the same file can be selected again if needed
+      e.target.value = '';
+    });
   }
 
   if (uploadForm) {
