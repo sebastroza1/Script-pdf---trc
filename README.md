@@ -1,6 +1,6 @@
-# PDF Extractor Flask App
+# Gestor de PDFs
 
-Este proyecto permite cargar múltiples archivos PDF, extraer de ellos la fecha, nombre, cargo y empresa mediante expresiones regulares y generar un archivo Excel con los resultados.
+Esta aplicación Flask permite subir múltiples archivos PDF y procesarlos para extraer información relevante. Utiliza un diseño moderno con Bootstrap 5 y ofrece carga de archivos mediante arrastrar y soltar.
 
 ## Instalación
 
@@ -26,6 +26,11 @@ flask run
 
 La aplicación estará disponible en `http://127.0.0.1:5000/`.
 
+Dependencias principales:
+- Flask y Flask-WTF
+- pdfplumber para leer PDFs
+- pandas y openpyxl para generar Excel
+
 ## Configuración
 
 - `SECRET_KEY`: clave secreta para Flask (opcional en variables de entorno).
@@ -34,3 +39,9 @@ La aplicación estará disponible en `http://127.0.0.1:5000/`.
 ## Procesamiento asíncrono (opcional)
 
 Si el volumen de PDFs es grande, se recomienda integrar Celery y Redis para manejar las tareas en segundo plano.
+
+## Uso
+
+1. Abre la página principal y arrastra varios PDFs al área azul.
+2. Verás una lista previa de los archivos antes de enviarlos.
+3. Al terminar el procesamiento se mostrará un enlace para descargar el Excel.
