@@ -8,7 +8,9 @@ from ..services.extractor import extract_fields_from_pdf
 from ..services.excel import generate_excel
 from ..utils.validators import validate_file
 
-bp = Blueprint('uploads', __name__)
+# Explicitly tell Flask where to find the templates for this blueprint.
+# They live one directory above this file in ``app/templates``.
+bp = Blueprint('uploads', __name__, template_folder='../templates')
 
 
 @bp.route('/', methods=['GET', 'POST'])
